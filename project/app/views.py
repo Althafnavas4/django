@@ -1,17 +1,22 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
+from.models import*
 
 # Create your views here.
 
 
 def shop_login(req):
+    if 'shop' in req.session:
+        return redirect(shop_home)
     if req.method=='POST':
         uname=req.POST['uname']
         password=req.POST['pswd']
         data=authenticate(username=uname,password=password)
         if data:
             login(req,data)
+            req.session['shop']=uname
             return redirect(shop_home)
+        
         
 
     else:
@@ -19,15 +24,30 @@ def shop_login(req):
     
 
 def shop_logout(req):
+    req.session.flush()
     logout(req)
     return redirect(shop_login)
 
 def shop_home(req):
-    return render(req,'shop/home.html')
+    if'shop' in req.session:
+        return render(req,'shop/home.html')
+    else:
+        return redirect(shop_login)
+
 
 def add_product(req):
-    if req.method=='post':
-        pass
+    if 'shop' in req.session:
+        if req.method=='POST':
+            id=req.POST['pro_id']
+            name=req.POST['name']
+            price=req.POST['price']
+            offer_price=req.POST['offer_price']
+            dis=req.POST['dis']
+            img=req.FILES['img']
+            data=product.objects.create(pro_id=id,name=name,price=price,offer_price=offer_price,dis=dis,img=img)
+            return redirect(shop_home)
+        else:
+            return render(req,'shop/add_pro.html')
     else:
-        return render(req,'shop/add_pro.html')
+        return redirect(shop_login)
  
