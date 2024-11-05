@@ -13,9 +13,11 @@ urlpatterns=[
 
 
     path('shop_home',views.shop_home),
-    path('add_pro',views.add_product)
+    path('add_pro',views.add_product),
 
 
 
+ 
     #----------------------user--------------------------------
+   path('register',views.register),
 ]
