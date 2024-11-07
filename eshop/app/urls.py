@@ -17,5 +17,6 @@ urlpatterns=[
     # --------------user---------------------
 
 
-    path('register',views.register)
+    path('register',views.register),
+    path('user_home',views.user_home)
 ]

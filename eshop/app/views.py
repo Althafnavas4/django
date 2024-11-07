@@ -16,9 +16,14 @@ def shp_login(req):
         password=req.POST['pswd']
         data=authenticate(username=uname,password=password)
         if data:
-            login(req,data)
-            req.session['eshop']=uname   #create session
-            return redirect(shp_home)
+            if data.is_superuser:
+                login(req,data)
+                req.session['eshop']=uname   #create session
+                return redirect(shp_home)
+            else:
+                login(req,data)
+                req.session['user']=uname
+                return redirect(user_home)
         else:
             messages.warning(req,'Invalid username or password.')
             return redirect(shp_login)
@@ -96,3 +101,13 @@ def register(req):
             return redirect(register)
     else:
         return render(req,'user/register.html')
+
+def user_home(req):
+    if 'user'in req.session:
+        return render(req,'user/home.html')
+    else:
+        return redirect(shp_login)
+    
+def view_pro(req,paid):
+    data=Product.objects.get(pk=paid)
+    return render(req,'user/view_pro.html',{'data':data})
