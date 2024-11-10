@@ -11,6 +11,8 @@ from django.contrib import messages
 def shp_login(req):
     if 'eshop' in req.session:
         return redirect(shp_home)
+    if 'user' in req.session:
+        return redirect(user_home)
     if req.method=='POST':
         uname=req.POST['uname']
         password=req.POST['pswd']
@@ -22,7 +24,7 @@ def shp_login(req):
                 return redirect(shp_home)
             else:
                 login(req,data)
-                req.session['user']=uname
+                req.session['user']=uname   #create session
                 return redirect(user_home)
         else:
             messages.warning(req,'Invalid username or password.')
@@ -63,7 +65,6 @@ def add_prod(req):
 def edit_prod(req,pid):
     if 'eshop' in req.session:
         if req.method=='POST':
-
             prd_id=req.POST['prd_id']
             prd_name=req.POST['prd_name']
             prd_price=req.POST['prd_price']
@@ -71,7 +72,10 @@ def edit_prod(req,pid):
             prd_dis=req.POST['prd_dis']
             img=req.FILES.get('img')
             if img:
-                Product.objects.filter(pk=pid).update(pro_id=prd_id,name=prd_name,price=prd_price,ofr_price=ofr_price,img=img,dis=prd_dis)
+                Product.objects.filter(pk=pid).update(pro_id=prd_id,name=prd_name,price=prd_price,ofr_price=ofr_price,dis=prd_dis)
+                data=Product.objects.get(pk=pid)
+                data.img=img
+                data.save()
             else:
                 Product.objects.filter(pk=pid).update(pro_id=prd_id,name=prd_name,price=prd_price,ofr_price=ofr_price,dis=prd_dis)
             return redirect(shp_home)
@@ -87,6 +91,7 @@ def delete_prod(req,pid):
     os.remove('media/'+og_path)
     data.delete()
     return redirect(shp_home)
+
 def register(req):
     if req.method=='POST':
         name=req.POST['name']
@@ -103,11 +108,12 @@ def register(req):
         return render(req,'user/register.html')
 
 def user_home(req):
-    if 'user'in req.session:
-        return render(req,'user/home.html')
+    if 'user' in req.session:
+        data=Product.objects.all()
+        return render(req,'user/home.html',{'data':data})
     else:
         return redirect(shp_login)
     
-def view_pro(req,paid):
-    data=Product.objects.get(pk=paid)
+def view_pro(req,pid):
+    data=Product.objects.get(pk=pid)
     return render(req,'user/view_pro.html',{'data':data})
