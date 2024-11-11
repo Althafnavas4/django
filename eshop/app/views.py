@@ -130,8 +130,7 @@ def view_cart(req):
     cart_det=Cart.objects.filter(user=user)
     return render(req,'user/view_cart.html',{'cart_det':cart_det})
 
-
 def delete_cart(req,id):
     cart=Cart.objects.get(pk=id)
-    cart=delete()
+    cart.delete()
     return redirect(view_cart)
