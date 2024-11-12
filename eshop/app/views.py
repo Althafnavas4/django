@@ -127,26 +127,26 @@ def add_to_cart(req,pid):
 
 def view_cart(req):
     user=User.objects.get(username=req.session['user'])
-    cart_det=Cart.objects.filter(user=user)
-    return render(req,'user/view_cart.html',{'cart_det':cart_det})
+    cart_dtls=Cart.objects.filter(user=user)
+    return render(req,'user/cart.html',{'cart_dtls':cart_dtls})
 
 def delete_cart(req,id):
     cart=Cart.objects.get(pk=id)
     cart.delete()
     return redirect(view_cart)
 
-
 def user_buy(req,cid):
-    user=User.objects.get(usernname=req.session['user'])
+    user=User.objects.get(username=req.session['user'])
     cart=Cart.objects.get(pk=cid)
     product=cart.product
-    price=cart.product
+    price=cart.product.ofr_price
     buy=Buy.objects.create(user=user,product=product,price=price)
     buy.save()
     return redirect(view_cart)
-
-def user_buy1(req,paid):
-    user=User.objects.get(username=req.session['user'])
-    product=Product.objects.get(pk=paid)
-    price=product.offer_price
-    buy=Buy.objects.create
+def user_buy1(req,pid):
+     user=User.objects.get(username=req.session['user'])
+     product=Product.objects.get(pk=pid)
+     price=product.ofr_price
+     buy=Buy.objects.create(user=user,product=product,price=price)
+     buy.save()
+     return redirect(user_home)
